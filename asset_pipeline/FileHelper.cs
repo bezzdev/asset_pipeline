@@ -6,7 +6,7 @@ using System.Text;
 
 namespace asset_pipeline
 {
-    public class FileHelper
+    public static class FileHelper
     {
         public static List<String> DirSearch(string sDir)
         {

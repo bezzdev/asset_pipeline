@@ -8,9 +8,20 @@ namespace asset_pipeline
     {
         static void Main(string[] args)
         {
+            // load configuration
+            Console.WriteLine("Loading configuration");
             PipelineConfiguration.LoadConfiguration("config.json");
             Console.WriteLine("");
-            
+
+            // sync google drive files
+            Console.WriteLine("Trying cloud sync");
+            GoogleDriveHelper.RunGoogleDrive("");
+            Console.ReadKey();
+
+            // detect files
+            Console.WriteLine("Running file comparison");
+            Console.WriteLine("");
+
             Console.WriteLine("asset_path:");
             string asset_path = PipelineConfiguration.Get("asset_path");
             Console.WriteLine(asset_path);
@@ -67,6 +78,25 @@ namespace asset_pipeline
             Console.WriteLine(updatedFiles.Count + " Updated Files");
             Console.WriteLine("");
 
+            Console.ReadKey();
+            Console.WriteLine("");
+            Console.WriteLine("New files");
+            Console.WriteLine("");
+            foreach (string file in newFiles)
+            {
+                Console.WriteLine(file);
+            }
+
+            Console.ReadKey();
+            Console.WriteLine("");
+            Console.WriteLine("Updated files");
+            Console.WriteLine("");
+            foreach (string file in updatedFiles)
+            {
+                Console.WriteLine(file);
+            }
+            Console.WriteLine("");
+
             Console.WriteLine("Copy files? (yes)");
             string input = Console.ReadLine();
             if (input.ToLower() == "yes")
@@ -105,9 +135,11 @@ namespace asset_pipeline
                         Directory.CreateDirectory(directory);
                     }
 
-                    File.Copy(file, targetFilePath);
+                    File.Copy(file, targetFilePath, true);
                 }
                 Console.WriteLine("Updated files copied");
+                Console.WriteLine("");
+                Console.WriteLine("Sync pipeline complete");
                 Console.ReadKey();
             } else
             {
