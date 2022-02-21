@@ -40,19 +40,26 @@ namespace asset_pipeline
             List<string> targetFiles = FileHelper.GetAllValidFiles(target_path);
             Console.WriteLine("");
 
+            copy_flow(assetFiles, asset_path, target_path);
+            copy_flow(targetFiles, target_path, asset_path);
+        }
+
+        public static void copy_flow(List<string> fromFiles, string from_path, string to_path)
+        {
+
             Console.WriteLine("Comparing files");
             List<string> existingFiles = new List<string>();
             List<string> newFiles = new List<string>();
             List<string> updatedFiles = new List<string>();
 
-            foreach (string file in assetFiles)
+            foreach (string file in fromFiles)
             {
                 FileInfo assetFileInfo = new FileInfo(file);
 
                 // try and find the original file in the assets
-                string relativePath = file.Substring(asset_path.Length, file.Length - asset_path.Length);
+                string relativePath = file.Substring(from_path.Length, file.Length - from_path.Length);
 
-                string targetFilePath = target_path + relativePath;
+                string targetFilePath = to_path + relativePath;
 
                 FileInfo targetFileInfo = new FileInfo(targetFilePath);
                 if (targetFileInfo.Exists)
@@ -61,18 +68,20 @@ namespace asset_pipeline
                     {
                         // file has not changed
                         existingFiles.Add(file);
-                    } else
+                    }
+                    else
                     {
                         // file has changed
                         updatedFiles.Add(file);
                     }
-                } else
+                }
+                else
                 {
                     // file is new
                     newFiles.Add(file);
                 }
             }
-            Console.WriteLine(assetFiles.Count + " Files compared");
+            Console.WriteLine(fromFiles.Count + " Files compared");
             Console.WriteLine("");
             Console.WriteLine(newFiles.Count + " New Files");
             Console.WriteLine(updatedFiles.Count + " Updated Files");
@@ -107,12 +116,12 @@ namespace asset_pipeline
                 foreach (string file in newFiles)
                 {
                     // copy the file to the new file path
-                    string relativePath = file.Substring(asset_path.Length, file.Length - asset_path.Length);
-                    string targetFilePath = target_path + relativePath;
+                    string relativePath = file.Substring(from_path.Length, file.Length - from_path.Length);
+                    string targetFilePath = to_path + relativePath;
 
                     string directory = Path.GetDirectoryName(targetFilePath);
 
-                    if(!Directory.Exists(directory))
+                    if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
                     }
@@ -125,8 +134,8 @@ namespace asset_pipeline
                 foreach (string file in updatedFiles)
                 {
                     // copy the file to the new file path
-                    string relativePath = file.Substring(asset_path.Length, file.Length - asset_path.Length);
-                    string targetFilePath = target_path + relativePath;
+                    string relativePath = file.Substring(from_path.Length, file.Length - from_path.Length);
+                    string targetFilePath = to_path + relativePath;
 
                     string directory = Path.GetDirectoryName(targetFilePath);
 
@@ -141,7 +150,8 @@ namespace asset_pipeline
                 Console.WriteLine("");
                 Console.WriteLine("Sync pipeline complete");
                 Console.ReadKey();
-            } else
+            }
+            else
             {
                 // exit
             }
